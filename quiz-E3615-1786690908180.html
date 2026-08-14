@@ -1,0 +1,377 @@
+<!DOCTYPE html><html lang="nl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Daltons — foto quiz</title><link href="https://fonts.googleapis.com/css2?family=Rye&family=Oswald:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"><style>
+    :root{--bg:#10130F;--surface:#181C15;--surface-2:#212619;--line:#33392A;--text:#F1EAD6;--muted:#99A382;--accent:#2E8B45;--accent-2:#C9A227;--good:#7CA47E;--bad:#C0483F;}
+    *{box-sizing:border-box;}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;}
+    h1{font-family:'Rye',cursive;letter-spacing:0.03em;font-weight:400;margin:0;}
+    h2,h3{font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:0.02em;font-weight:600;margin:0;}
+    .wrap{max-width:520px;margin:0 auto;padding:20px 16px 60px;}
+    .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px;}
+    .muted{color:var(--muted);font-size:13px;line-height:1.5;}
+    .center{text-align:center;}
+    .hidden{display:none !important;}
+    button{font-family:'Oswald',sans-serif;text-transform:uppercase;letter-spacing:0.04em;font-size:14px;border:none;border-radius:8px;padding:12px 16px;cursor:pointer;width:100%;background:var(--accent);color:#1a0d08;}
+    button:disabled{opacity:.4;}
+    .progress{display:flex;gap:4px;margin-bottom:16px;}
+    .progress .seg{flex:1;height:4px;border-radius:2px;background:var(--line);}
+    .progress .seg.done{background:var(--accent);}
+    .progress .seg.current{background:var(--accent-2);}
+    .polaroid{background:#fff;padding:10px 10px 34px;border-radius:2px;box-shadow:0 8px 24px rgba(0,0,0,.4);margin-bottom:16px;}
+    .polaroid img{width:100%;display:block;border-radius:1px;aspect-ratio:4/3;object-fit:cover;background:#111;}
+    .polaroid .cap{color:#3a3529;font-family:'Oswald',sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:.06em;text-align:center;margin-top:8px;}
+    .capture-zone{border:2px dashed var(--line);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:34px 16px;text-align:center;cursor:pointer;margin-bottom:14px;color:var(--muted);}
+    input[type=file]{display:none;}
+    .score-label{font-family:'Oswald',sans-serif;font-size:34px;text-align:center;margin-top:2px;}
+    .score-sub{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;text-align:center;}
+    .feedback-box{background:var(--surface-2);border-left:3px solid var(--accent-2);border-radius:0 8px 8px 0;padding:12px 14px;font-size:14px;margin-top:14px;line-height:1.5;}
+    .loc-row{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-top:10px;}
+    .badge{font-family:'Oswald',sans-serif;font-size:11px;padding:3px 8px;border-radius:20px;letter-spacing:.04em;}
+    .badge.good{background:rgba(124,164,126,.18);color:var(--good);}
+    .badge.bad{background:rgba(194,84,80,.18);color:var(--bad);}
+    .badge.neutral{background:rgba(167,154,128,.18);color:var(--muted);}
+    .spinner{width:26px;height:26px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    .summary-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px;}
+    .summary-row .thumb{width:34px;height:34px;object-fit:cover;border-radius:6px;margin-right:8px;}
+    .summary-row .left{display:flex;align-items:center;}
+    .tile-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+    .tile{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;cursor:pointer;background:var(--surface-2);}
+    .tile img{width:100%;height:100%;object-fit:cover;display:block;}
+    .tile .badge-corner{position:absolute;bottom:4px;right:4px;font-family:'Oswald',sans-serif;font-size:11px;font-weight:700;padding:2px 6px;border-radius:20px;background:rgba(21,19,14,.85);}
+    .tile .badge-corner.done{color:var(--good);}
+    .tile .badge-corner.pending{color:var(--muted);}
+    .btn-row{display:flex;gap:8px;margin-top:12px;}
+    .btn-row button{width:auto;flex:1;font-size:12px;padding:11px 6px;}
+    .btn-secondary{background:var(--surface-2);color:var(--text);border:1px solid var(--line);}
+    .btn-ghost2{background:transparent;color:var(--muted);border:1px dashed var(--line);width:100%;margin-top:10px;}
+    input[type=text].std-input{width:100%;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:11px 12px;color:var(--text);font-size:15px;font-family:'Inter',sans-serif;margin-top:2px;}
+    .loc-banner{border-radius:10px;padding:11px 14px;margin-bottom:12px;font-size:13px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+    .loc-banner.checking{background:var(--surface-2);color:var(--muted);}
+    .loc-banner.ok{background:rgba(124,164,126,.14);color:var(--good);}
+    .loc-banner.fail{background:rgba(194,84,80,.14);color:var(--bad);}
+    .loc-banner button{width:auto;flex-shrink:0;font-size:11px;padding:7px 10px;background:var(--surface);color:var(--text);border:1px solid var(--line);}
+  </style></head><body>
+    <div class="wrap">
+      <h1 style="font-size:22px;margin-bottom:6px;" id="quiz-title"></h1>
+      <p class="muted" id="quiz-info" style="margin-bottom:18px;"></p>
+
+      <div id="overview">
+        <div class="loc-banner hidden" id="loc-banner"></div>
+        <div class="tile-grid" id="tile-grid"></div>
+        <div class="card">
+          <label for="player-email">Jouw e-mailadres</label>
+          <input type="text" class="std-input" id="player-email" placeholder="naam@voorbeeld.be">
+          <button id="btn-submit" style="margin-top:12px;">Indienen</button>
+          <p class="muted" id="submit-hint" style="margin-top:10px;"></p>
+        </div>
+      </div>
+
+      <div id="capture-screen" class="hidden">
+        <div class="polaroid"><img id="src-img" src=""><div class="cap" id="src-cap"></div></div>
+        <div id="capture-zone">
+          <div class="capture-zone" id="capture-trigger"><div style="font-size:30px;margin-bottom:8px;">📷</div><div>Tik om foto te nemen</div></div>
+          <input type="file" id="file-capture" accept="image/*" capture="environment">
+        </div>
+        <div id="loading" class="hidden card center"><div class="spinner"></div><p class="muted" style="margin-top:12px;">Foto's vergelijken…</p></div>
+        <div id="result" class="hidden">
+          <div class="card">
+            <div class="score-label" id="score-label" style="text-align:center;">—</div>
+            <div class="score-sub" style="text-align:center;">overeenkomst</div>
+            <div class="feedback-box" id="feedback"></div>
+            <div class="loc-row" id="loc-row"></div>
+          </div>
+          <div class="btn-row">
+            <button class="btn-secondary" id="btn-again" type="button">Opnieuw</button>
+            <button class="btn-secondary" id="btn-discard" type="button">Wissen</button>
+            <button id="btn-continue" type="button">Verder</button>
+          </div>
+        </div>
+        <button class="btn-ghost2" id="btn-back-overview" type="button">← Terug naar overzicht</button>
+      </div>
+    </div>
+  <script>const QUIZ = {"code":"E3615","name":"Daltons","createdAt":"2026-08-14T07:01:48.174Z","organizerEmail":"Peter@casentis.be","aiKey":"Z0RqWi05M0xvSnY4RmFGSl9Ed3BRWW9yRDFYU3IyVWwyVThZNENpMzl6OEk2TlI4YkEuUUE=","aiModel":"gemini-2.5-flash","photos":[{"id":"6dyfz2is3a5","dataUrl":"data:image/jpeg;base64,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","gps":{"lat":51.127113466666664,"lon":3.494774177777778},"name":"17866907781662447579055547615556.jpg"}]};
+    function haversine(a,b){const R=6371000;const toRad=d=>d*Math.PI/180;const dLat=toRad(b.lat-a.lat);const dLon=toRad(b.lon-a.lon);const s=Math.sin(dLat/2)**2+Math.cos(toRad(a.lat))*Math.cos(toRad(b.lat))*Math.sin(dLon/2)**2;return 2*R*Math.asin(Math.sqrt(s));}
+    function getPos(ms){
+      return new Promise(res=>{
+        if(!navigator.geolocation){ res({pos:null, reason:"unsupported"}); return; }
+        const t=setTimeout(()=>res({pos:null, reason:"timeout"}), ms||8000);
+        navigator.geolocation.getCurrentPosition(
+          p=>{ clearTimeout(t); res({pos:{lat:p.coords.latitude,lon:p.coords.longitude}, accuracy:p.coords.accuracy, reason:null}); },
+          err=>{ clearTimeout(t); res({pos:null, reason: err.code===1?"denied":(err.code===2?"unavailable":"timeout")}); },
+          {enableHighAccuracy:true, timeout: ms||8000}
+        );
+      });
+    }
+    function fileToDataUrl(f){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=()=>rej(new Error("read failed"));r.readAsDataURL(f);});}
+    function loadImg(src){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>rej(new Error("img failed"));i.src=src;});}
+    async function localSimilarity(urlA, urlB){
+      const [a,b] = await Promise.all([loadImg(urlA), loadImg(urlB)]);
+
+      // Structuur: contrast-genormaliseerd grijswaarden-grid, minder gevoelig voor belichtingsverschillen
+      const gSize = 32;
+      function grayGrid(img){
+        const c = document.createElement("canvas"); c.width=gSize; c.height=gSize;
+        const ctx = c.getContext("2d"); ctx.drawImage(img,0,0,gSize,gSize);
+        const d = ctx.getImageData(0,0,gSize,gSize).data;
+        const g = new Float32Array(gSize*gSize);
+        let min=255, max=0;
+        for(let i=0,j=0;i<d.length;i+=4,j++){
+          const v = d[i]*0.299 + d[i+1]*0.587 + d[i+2]*0.114;
+          g[j]=v; if(v<min)min=v; if(v>max)max=v;
+        }
+        const range = Math.max(1, max-min);
+        for(let j=0;j<g.length;j++) g[j] = (g[j]-min)/range*255;
+        return g;
+      }
+      const ga = grayGrid(a), gb = grayGrid(b);
+      let diff=0;
+      for(let i=0;i<ga.length;i++) diff += Math.abs(ga[i]-gb[i]);
+      const structScore = Math.max(0, Math.min(100, 100 - (diff/ga.length/255*140)));
+
+      // Kleur: gemiddelde kleur per grof blok, vangt onderwerp/omgeving ook bij lichte verschuiving
+      const cSize = 8;
+      function colorGrid(img){
+        const c = document.createElement("canvas"); c.width=cSize; c.height=cSize;
+        const ctx = c.getContext("2d"); ctx.drawImage(img,0,0,cSize,cSize);
+        return ctx.getImageData(0,0,cSize,cSize).data;
+      }
+      const ca = colorGrid(a), cb = colorGrid(b);
+      let colorDiff=0;
+      for(let i=0;i<ca.length;i+=4){
+        const dr=ca[i]-cb[i], dg=ca[i+1]-cb[i+1], db2=ca[i+2]-cb[i+2];
+        colorDiff += Math.sqrt(dr*dr+dg*dg+db2*db2);
+      }
+      const avgColorDiff = colorDiff/(cSize*cSize);
+      const maxPossible = Math.sqrt(3*255*255);
+      const colorScore = Math.max(0, Math.min(100, 100 - (avgColorDiff/maxPossible*130)));
+
+      return Math.round(structScore*0.55 + colorScore*0.45);
+    }
+    function feedbackFor(score){
+      if(score>=85) return "Heel dicht bij het origineel — mooi gedaan!";
+      if(score>=65) return "Goed herkenbaar, maar niet helemaal identiek.";
+      if(score>=40) return "Er zit wat verschil in kleur, hoek of compositie.";
+      return "Dit lijkt behoorlijk af te wijken van het origineel.";
+    }
+
+    function deobfuscateKey(str){
+      try{ return atob(str).split("").reverse().join(""); }catch(e){ return str; }
+    }
+
+    async function compareImagesAI(sourceUrl, attemptUrl, apiKey, model){
+      const strip = d => d.split(",")[1];
+      const body = {
+        contents: [{
+          parts: [
+            {text: "Je krijgt twee foto's uit een 'maak de foto na'-spel: eerst het ORIGINEEL, dan de POGING van een speler die het probeerde na te bootsen. Beoordeel hoe goed de poging het origineel benadert qua onderwerp, hoek, compositie en kleur. Antwoord met JSON: {\"score\": <geheel getal 0-100>, \"feedback\": \"<één korte, vriendelijke Nederlandse zin>\"}"},
+            {inline_data: {mime_type: "image/jpeg", data: strip(sourceUrl)}},
+            {inline_data: {mime_type: "image/jpeg", data: strip(attemptUrl)}}
+          ]
+        }],
+        generationConfig: { responseMimeType: "application/json" }
+      };
+      const endpoint = "https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(model || "gemini-2.5-flash") + ":generateContent?key=" + encodeURIComponent(apiKey);
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body)
+      });
+      if(!res.ok){
+        const t = await res.text().catch(()=>"");
+        throw new Error("AI-oproep mislukt (" + res.status + "). " + t.slice(0,150));
+      }
+      const data = await res.json();
+      const parts = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) || [];
+      const text = parts.map(p=>p.text||"").join("");
+      const clean = text.replace(/```json|```/g,"").trim();
+      const parsed = JSON.parse(clean);
+      let score = Math.round(Number(parsed.score));
+      if(isNaN(score)) score = 0;
+      score = Math.max(0, Math.min(100, score));
+      return {score, feedback: parsed.feedback || ""};
+    }
+
+    const results = {}; // photoId -> {score, distance, locAvail}
+    let activeIdx = null;
+    let lastAttempt = null;
+
+    document.getElementById("quiz-title").textContent = QUIZ.name;
+    document.getElementById("quiz-info").textContent = QUIZ.photos.length + " foto's — tik een foto aan om te starten";
+
+    function renderTiles(){
+      const grid = document.getElementById("tile-grid");
+      grid.innerHTML = "";
+      QUIZ.photos.forEach((p, i)=>{
+        const r = results[p.id];
+        const tile = document.createElement("div");
+        tile.className = "tile";
+        tile.innerHTML = '<img src="'+p.dataUrl+'" alt="">' +
+          (r ? '<div class="badge-corner done">'+r.score+'%</div>' : '<div class="badge-corner pending">tik</div>');
+        tile.addEventListener("click", ()=>openCapture(i));
+        grid.appendChild(tile);
+      });
+    }
+    renderTiles();
+    requestLocationPermission();
+
+    function requestLocationPermission(){
+      const banner = document.getElementById("loc-banner");
+      const hasAnyGps = QUIZ.photos.some(p => p.gps);
+      if(!hasAnyGps){ banner.classList.add("hidden"); return; }
+      banner.className = "loc-banner checking";
+      banner.innerHTML = "📍 Locatietoegang controleren…";
+      getPos(8000).then(result=>{
+        if(result.pos){
+          banner.className = "loc-banner ok";
+          banner.innerHTML = "📍 Locatie beschikbaar — deze quiz kan locatie meetellen.";
+          setTimeout(()=>banner.classList.add("hidden"), 3500);
+        } else {
+          let reasonText = "Locatie niet beschikbaar.";
+          if(result.reason==="denied") reasonText = "Locatietoestemming geweigerd.";
+          else if(result.reason==="unavailable") reasonText = "Kon je locatie niet bepalen.";
+          else if(result.reason==="timeout") reasonText = "Ophalen van locatie duurde te lang.";
+          else if(result.reason==="unsupported") reasonText = "Je browser ondersteunt geen locatie.";
+          banner.className = "loc-banner fail";
+          banner.innerHTML = "📍 " + reasonText + " De quiz werkt nog steeds, maar zonder locatiecheck. <button id=\"btn-retry-loc\" type=\"button\">Opnieuw proberen</button>";
+          const retryBtn = document.getElementById("btn-retry-loc");
+          if(retryBtn) retryBtn.addEventListener("click", requestLocationPermission);
+        }
+      });
+    }
+
+    function openCapture(i){
+      activeIdx = i;
+      lastAttempt = null;
+      const p = QUIZ.photos[i];
+      document.getElementById("overview").classList.add("hidden");
+      document.getElementById("capture-screen").classList.remove("hidden");
+      document.getElementById("src-img").src = p.dataUrl;
+      document.getElementById("src-cap").textContent = "Maak deze foto na";
+      document.getElementById("capture-zone").classList.remove("hidden");
+      document.getElementById("loading").classList.add("hidden");
+      document.getElementById("result").classList.add("hidden");
+    }
+
+    function backToOverview(){
+      activeIdx = null;
+      document.getElementById("capture-screen").classList.add("hidden");
+      document.getElementById("overview").classList.remove("hidden");
+      renderTiles();
+    }
+
+    document.getElementById("btn-back-overview").addEventListener("click", backToOverview);
+    document.getElementById("capture-trigger").addEventListener("click", ()=>document.getElementById("file-capture").click());
+
+    document.getElementById("file-capture").addEventListener("change", async (e)=>{
+      const file = e.target.files[0]; if(!file) return; e.target.value="";
+      document.getElementById("capture-zone").classList.add("hidden");
+      document.getElementById("loading").classList.remove("hidden");
+      const photo = QUIZ.photos[activeIdx];
+      const [attemptUrl, posResult] = await Promise.all([fileToDataUrl(file), getPos(8000)]);
+      const pos = posResult.pos;
+      const accuracy = posResult.accuracy || 0;
+
+      let visual, feedbackText;
+      if(QUIZ.aiKey){
+        try{
+          const aiResult = await compareImagesAI(photo.dataUrl, attemptUrl, deobfuscateKey(QUIZ.aiKey), QUIZ.aiModel);
+          visual = aiResult.score;
+          feedbackText = aiResult.feedback;
+        }catch(err){
+          console.error(err);
+          visual = await localSimilarity(photo.dataUrl, attemptUrl);
+          feedbackText = feedbackFor(visual) + " (AI-vergelijking niet gelukt, lokale schatting gebruikt.)";
+        }
+      } else {
+        visual = await localSimilarity(photo.dataUrl, attemptUrl);
+        feedbackText = feedbackFor(visual);
+      }
+
+      let distance=null, locAvail=false, locScore=null, effDistance=null;
+      if(photo.gps && pos){
+        distance = haversine(photo.gps, pos);
+        locAvail = true;
+        // trek de gemeten GPS-nauwkeurigheid van de afstand af — eerlijker bij minder precieze metingen
+        effDistance = Math.max(0, distance - accuracy);
+        locScore = effDistance<=10?100 : effDistance<=25?85 : effDistance<=50?60 : effDistance<=100?35 : effDistance<=250?10 : 0;
+      }
+      // locatie weegt nu zwaar mee; bij kilometers afstand wordt de score hard beperkt, ongeacht de foto-gelijkenis
+      let total = locAvail ? Math.round(visual*0.35 + locScore*0.65) : visual;
+      if(locAvail && distance > 1000){ total = Math.min(total, 10); }
+      else if(locAvail && distance > 300){ total = Math.min(total, 35); }
+      lastAttempt = {score: total, distance, locAvail, locScore};
+
+      document.getElementById("loading").classList.add("hidden");
+      document.getElementById("result").classList.remove("hidden");
+      document.getElementById("score-label").textContent = total+"%";
+      document.getElementById("feedback").textContent = feedbackText;
+      const locRow = document.getElementById("loc-row");
+      if(locAvail){
+        const km = distance>=1000?(distance/1000).toFixed(1)+" km":Math.round(distance)+" m";
+        const cls = locScore>=70?"good":(locScore===0?"bad":"neutral");
+        locRow.innerHTML = '<span class="badge '+cls+'">locatie</span> ~'+km+' van de originele plek (GPS-nauwkeurigheid ±'+Math.round(accuracy)+'m)';
+      } else if(!photo.gps){
+        locRow.innerHTML = '<span class="badge neutral">locatie</span> bronfoto had geen locatiegegevens';
+      } else if(!pos){
+        let reasonText = "kon je locatie niet ophalen";
+        if(posResult.reason==="denied") reasonText = "locatietoestemming geweigerd — zet dit aan bij Chrome";
+        else if(posResult.reason==="unavailable") reasonText = "kon je locatie niet bepalen (GPS-signaal?)";
+        else if(posResult.reason==="timeout") reasonText = "ophalen van je locatie duurde te lang";
+        else if(posResult.reason==="unsupported") reasonText = "je browser ondersteunt geen locatie";
+        locRow.innerHTML = '<span class="badge bad">locatie</span> ' + reasonText;
+      }
+      if(photo.gps){
+        const debugLink = '<a href="https://www.google.com/maps?q=' + photo.gps.lat + ',' + photo.gps.lon + '" target="_blank" rel="noopener" style="color:var(--accent-2);">bekijk locatie van de oplossing</a>';
+        locRow.innerHTML += (locRow.innerHTML ? ' — ' : '') + debugLink;
+      }
+    });
+
+    document.getElementById("btn-again").addEventListener("click", ()=>{
+      document.getElementById("result").classList.add("hidden");
+      document.getElementById("capture-zone").classList.remove("hidden");
+    });
+
+    document.getElementById("btn-discard").addEventListener("click", ()=>{
+      lastAttempt = null;
+      backToOverview();
+    });
+
+    document.getElementById("btn-continue").addEventListener("click", ()=>{
+      if(lastAttempt){
+        const photo = QUIZ.photos[activeIdx];
+        results[photo.id] = lastAttempt;
+      }
+      backToOverview();
+    });
+
+    document.getElementById("btn-submit").addEventListener("click", ()=>{
+      const email = document.getElementById("player-email").value.trim();
+      if(!email){ alert("Vul je e-mailadres in."); return; }
+      const done = Object.keys(results).length;
+      const total = QUIZ.photos.length;
+      if(done < total){
+        const ok = confirm("Je hebt nog niet alle foto's gemaakt ("+done+"/"+total+"). Toch indienen?");
+        if(!ok) return;
+      }
+      const scores = QUIZ.photos.map(p => results[p.id] ? results[p.id].score : null);
+      const attempted = scores.filter(s => s !== null);
+      const avg = attempted.length ? Math.round(attempted.reduce((a,b)=>a+b,0)/attempted.length) : 0;
+
+      let body = "Resultaat voor quiz: " + QUIZ.name + "\n";
+      body += "Gemiddelde score: " + avg + "% (" + attempted.length + "/" + total + " foto's gemaakt)\n\n";
+      QUIZ.photos.forEach((p,i)=>{
+        const r = results[p.id];
+        body += (i+1) + ". " + p.name + ": " + (r ? r.score+"%" : "niet gemaakt") + "\n";
+      });
+
+      const subject = "Resultaat quiz: " + QUIZ.name + " (" + avg + "%)";
+      let mailto = "mailto:" + encodeURIComponent(email);
+      const params = [];
+      if(QUIZ.organizerEmail) params.push("cc=" + encodeURIComponent(QUIZ.organizerEmail));
+      params.push("subject=" + encodeURIComponent(subject));
+      params.push("body=" + encodeURIComponent(body));
+      mailto += "?" + params.join("&");
+
+      document.getElementById("submit-hint").textContent = "Je e-mail-app opent met het resultaat klaarstaand — druk daar nog op verzenden.";
+      window.location.href = mailto;
+    });
+  </script></body></html>
